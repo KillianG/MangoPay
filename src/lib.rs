@@ -1,5 +1,5 @@
-mod user;
-mod wallet;
+pub mod user;
+pub mod wallet;
 
 use reqwest::blocking::{Client, RequestBuilder, Response};
 use serde_json::Value;
