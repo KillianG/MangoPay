@@ -13,7 +13,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
+  build-and-test:
 
     runs-on: ubuntu-latest
 
@@ -26,11 +26,3 @@ jobs:
       env:
         MANGO_CLIENT_ID: ${{ secrets.MANGO_CLIENT_ID }}
         MANGO_API_KEY: ${{ secrets.MANGO_API_KEY }}
-
-  test:
-    steps:
-      - name: Run tests
-        run: cargo test --verbose
-        env:
-          MANGO_CLIENT_ID: ${{ secrets.MANGO_CLIENT_ID }}
-          MANGO_API_KEY: ${{ secrets.MANGO_API_KEY }}
