@@ -1,8 +1,6 @@
-# WORK IN PROGRESS
-MangoPay library for rust
+# [WIP] MangoPay library for rust
 
-Feel free to help me build this :)
-
+Feel free to help me build this [KillianG/MangoPay](https://github.com/KillianG/MangoPay) :)
 
 ## How to use (by examples)
 
