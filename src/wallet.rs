@@ -4,7 +4,7 @@ use serde_derive::Deserialize;
 use serde_derive::Serialize;
 use serde_json::Value;
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CreateWallet {
     #[serde(rename = "Owners")]
@@ -40,7 +40,7 @@ pub struct Wallet {
     pub creation_date: i64,
 }
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Balance {
     #[serde(rename = "Currency")]
@@ -85,10 +85,9 @@ impl Mangopay {
 }
 
 mod test {
-    use std::borrow::Borrow;
     use crate::Mangopay;
     use crate::user::CreateUserBody;
-    use crate::wallet::{ListWallets, Wallet};
+    use crate::wallet::ListWallets;
 
     #[test]
     fn create_wallet() {

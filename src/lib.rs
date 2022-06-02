@@ -15,7 +15,7 @@ pub struct Mangopay {
 
 pub type GetCardsResponse = Vec<CardResponse>;
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CardResponse {
     #[serde(rename = "ExpirationDate")]
@@ -56,7 +56,7 @@ impl Mangopay {
         let formatted_token = format!("{}:{}", client_id, api_key);
         let authorization_token = base64::encode(formatted_token);
         let mango_infos: Mangopay = Mangopay {client_id, api_key, authorization_token};
-        return mango_infos;
+        mango_infos
     }
 
     fn make_get_api_call(self: &Mangopay, api_url: String) -> reqwest::Result<Response> {

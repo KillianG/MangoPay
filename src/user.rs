@@ -1,7 +1,7 @@
 use serde_json::Value;
 use crate::Mangopay;
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CreateUserBody {
     #[serde(rename = "FirstName")]
@@ -63,7 +63,7 @@ pub struct User {
     pub user_category: String,
 }
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Address {
     #[serde(rename = "AddressLine1")]
@@ -106,8 +106,8 @@ impl Mangopay {
 }
 
 mod tests {
-    use crate::Mangopay;
-    use crate::user::CreateUserBody;
+    
+    
 
     #[test]
     fn create_user() {
