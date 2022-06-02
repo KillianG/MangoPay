@@ -14,7 +14,7 @@ let mango: Mangopay = Mangopay::init(
 ```
 
 ### User
-```Rust
+```rust
 let user_infos = CreateUserBody {
     first_name: "firstName".to_string(),
     last_name: "lastNme".to_string(),
@@ -30,7 +30,7 @@ let user_get = mangop.get_user(user.id).unwrap();
 ```
 
 ### Wallet
-```Rust
+```rust
 let wallet: Wallet = mango.create_wallet(CreateWallet{
     owners: vec![user.id],
     description: "Description".to_string(),
