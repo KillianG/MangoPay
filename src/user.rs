@@ -82,38 +82,38 @@ pub struct Address {
 
 impl Mangopay {
 
-    pub fn create_user(self: &Mangopay, user_infos: &CreateUserBody) -> Option<User> {
+    pub fn create_user(self: &Mangopay, user_infos: &CreateUserBody) -> Result<User, reqwest::Error> {
         let user_response = match self.create_post_api_call("users/natural/".parse().unwrap()).json(user_infos).send() {
             Ok(resp) => resp,
-            Err(_) => return None
+            Err(e) => return Err(e)
         };
         match user_response.json() {
-            Ok(val) => Some(val),
-            Err(_) => None
+            Ok(val) => Ok(val),
+            Err(e) => Err(e)
         }
     }
 
-    pub fn get_user(self: &Mangopay, user_id: String) -> Option<User> {
+    pub fn get_user(self: &Mangopay, user_id: String) -> Result<User, reqwest::Error> {
         let user_response = match self.make_get_api_call(format!("users/{}", user_id)) {
             Ok(resp) => resp,
-            Err(_) => return None
+            Err(e) => return Err(e)
         };
         match user_response.json() {
-            Ok(val) => Some(val),
-            Err(_) => None
+            Ok(val) => Ok(val),
+            Err(e) => Err(e)
         }
     }
 }
 
 mod tests {
-    
-    
+    use crate::Mangopay;
+    use crate::user::CreateUserBody;
 
     #[test]
     fn create_user() {
         let client_id: &str = env!("MANGO_CLIENT_ID");
         let api_key: &str = env!("MANGO_API_KEY");
-        let mangop: Mangopay = Mangopay::init(client_id.to_owned(), api_key.to_owned());
+        let mangop: Mangopay = Mangopay::init(client_id.to_owned(), api_key.to_owned(), "https://api.sandbox.mangopay.com/v2.01/".to_string());
 
         let user = mangop.create_user(&CreateUserBody {
             first_name: "Killian".parse().unwrap(),

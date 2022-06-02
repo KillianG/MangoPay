@@ -1,5 +1,6 @@
 pub mod user;
 pub mod wallet;
+pub mod card;
 
 use reqwest::blocking::{Client, RequestBuilder, Response};
 use serde_json::Value;
@@ -10,7 +11,8 @@ extern crate serde_derive;
 pub struct Mangopay {
     client_id: String,
     api_key: String,
-    authorization_token: String
+    authorization_token: String,
+    mango_api_url_with_user_id: String
 }
 
 pub type GetCardsResponse = Vec<CardResponse>;
@@ -52,25 +54,30 @@ pub struct CardResponse {
 
 impl Mangopay {
 
-    pub fn init(client_id: String, api_key: String) -> Self {
+    pub fn init(client_id: String, api_key: String, mango_url: String) -> Self {
         let formatted_token = format!("{}:{}", client_id, api_key);
         let authorization_token = base64::encode(formatted_token);
-        let mango_infos: Mangopay = Mangopay {client_id, api_key, authorization_token};
+        let mango_api_url_with_user_id: String = format!("{}{}", mango_url, client_id);
+        let mango_infos: Mangopay = Mangopay {client_id, api_key, authorization_token, mango_api_url_with_user_id};
         mango_infos
     }
 
     fn make_get_api_call(self: &Mangopay, api_url: String) -> reqwest::Result<Response> {
         let client: Client = reqwest::blocking::Client::new();
-        let mango_api_base_url: String = format!("https://api.sandbox.mangopay.com/v2.01/{}", self.client_id);
-        client.get(format!("{}/{}", mango_api_base_url, api_url))
+        client.get(format!("{}/{}", self.mango_api_url_with_user_id, api_url))
             .header("Authorization", format!("Basic {}", self.authorization_token))
             .send()
     }
 
+    fn create_put_api_call(self: &Mangopay, api_url: String) -> RequestBuilder {
+        let client: Client = reqwest::blocking::Client::new();
+        client.put(format!("{}/{}", self.mango_api_url_with_user_id, api_url))
+            .header("Authorization", format!("Basic {}", self.authorization_token))
+    }
+
     fn create_post_api_call(self: &Mangopay, api_url: String) -> RequestBuilder {
         let client: Client = reqwest::blocking::Client::new();
-        let mango_api_base_url: String = format!("https://api.sandbox.mangopay.com/v2.01/{}", self.client_id);
-        client.post(format!("{}/{}", mango_api_base_url, api_url))
+        client.post(format!("{}/{}", self.mango_api_url_with_user_id, api_url))
             .header("Authorization", format!("Basic {}", self.authorization_token))
     }
 }
@@ -83,7 +90,7 @@ mod tests {
     fn init() {
         let client_id: String = "client_id".to_string();
         let api_key: String = "api_key".to_string();
-        let mangop: Mangopay = Mangopay::init(client_id.to_owned(), api_key.to_owned());
+        let mangop: Mangopay = Mangopay::init(client_id.to_owned(), api_key.to_owned(), "https://api.sandbox.mangopay.com/v2.01/".to_string());
         assert_eq!(mangop.api_key, "api_key");
         assert_eq!(mangop.client_id, "client_id");
         let formatted_token = format!("{}:{}", &client_id, &api_key);

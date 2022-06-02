@@ -51,35 +51,27 @@ pub struct Balance {
 
 impl Mangopay {
 
-    pub fn create_wallet(self: &Mangopay, user_id: String) -> Option<Wallet> {
-        let create_wallet = CreateWallet {
-            owners: vec![user_id],
-            description: "Mecen wallet".to_string(),
-            currency: "EUR".to_string(),
-            tag: "Created by Mecen backend".to_string()
-        };
+    pub fn create_wallet(self: &Mangopay, wallet: CreateWallet) -> Result<Wallet, reqwest::Error> {
 
-        let wallet_response = match self.create_post_api_call("wallets/".to_string()).json(&create_wallet).send() {
-            Ok(val) => val,
-            Err(_) => return None
+        let wallet_response = match self.create_post_api_call("wallets/".to_string()).json(&wallet).send() {
+            Ok(resp) => resp,
+            Err(e) => return Err(e)
         };
-
         match wallet_response.json() {
-            Ok(val) => Some(val),
-            Err(_) => None
+            Ok(val) => Ok(val),
+            Err(e) => Err(e)
         }
     }
 
-    pub fn list_wallets(self: &Mangopay, user_id: String) -> Option<ListWallets> {
+    pub fn list_wallets(self: &Mangopay, user_id: String) -> Result<ListWallets, reqwest::Error> {
 
         let wallet_response = match self.make_get_api_call(format!("users/{}/wallets", user_id)){
-            Ok(val) => val,
-            Err(_) => return None
+            Ok(resp) => resp,
+            Err(e) => return Err(e)
         };
-
         match wallet_response.json() {
-            Ok(val) => Some(val),
-            Err(_) => None
+            Ok(val) => Ok(val),
+            Err(e) => Err(e)
         }
     }
 }
@@ -87,13 +79,13 @@ impl Mangopay {
 mod test {
     use crate::Mangopay;
     use crate::user::CreateUserBody;
-    use crate::wallet::ListWallets;
+    use crate::wallet::{CreateWallet, ListWallets, Wallet};
 
     #[test]
     fn create_wallet() {
         let client_id: &str = env!("MANGO_CLIENT_ID");
         let api_key: &str = env!("MANGO_API_KEY");
-        let mangop: Mangopay = Mangopay::init(client_id.to_owned(), api_key.to_owned());
+        let mangop: Mangopay = Mangopay::init(client_id.to_owned(), api_key.to_owned(), "https://api.sandbox.mangopay.com/v2.01/".to_string());
 
         let user_id = mangop.create_user(&CreateUserBody {
             first_name: "Killian".parse().unwrap(),
@@ -103,7 +95,12 @@ mod test {
             tag: "TestUser".to_string(),
             terms_and_conditions_accepted: true,
         }).unwrap().id;
-        let wallet: Wallet = mangop.create_wallet(user_id.to_string()).unwrap();
+        let wallet: Wallet = mangop.create_wallet(CreateWallet {
+            owners: vec![user_id.to_owned()],
+            description: "Wallet".to_string(),
+            currency: "EUR".to_string(),
+            tag: "".to_string()
+        }).unwrap();
         assert_eq!(wallet.balance.amount, 0);
         assert_eq!(wallet.balance.currency, "EUR");
         assert_eq!(wallet.owners.get(0).unwrap(), &user_id);
