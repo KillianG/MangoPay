@@ -2,7 +2,7 @@ pub mod user;
 pub mod wallet;
 pub mod card;
 
-use reqwest::blocking::{Client, RequestBuilder, Response};
+use reqwest::{Client, RequestBuilder, Response};
 use serde_json::Value;
 
 #[macro_use]
@@ -62,21 +62,21 @@ impl Mangopay {
         mango_infos
     }
 
-    fn make_get_api_call(self: &Mangopay, api_url: String) -> reqwest::Result<Response> {
-        let client: Client = reqwest::blocking::Client::new();
+    async fn make_get_api_call(self: &Mangopay, api_url: String) -> reqwest::Result<Response> {
+        let client: Client = reqwest::Client::new();
         client.get(format!("{}/{}", self.mango_api_url_with_user_id, api_url))
             .header("Authorization", format!("Basic {}", self.authorization_token))
-            .send()
+            .send().await
     }
 
     fn create_put_api_call(self: &Mangopay, api_url: String) -> RequestBuilder {
-        let client: Client = reqwest::blocking::Client::new();
+        let client: Client = reqwest::Client::new();
         client.put(format!("{}/{}", self.mango_api_url_with_user_id, api_url))
             .header("Authorization", format!("Basic {}", self.authorization_token))
     }
 
     fn create_post_api_call(self: &Mangopay, api_url: String) -> RequestBuilder {
-        let client: Client = reqwest::blocking::Client::new();
+        let client: Client = reqwest::Client::new();
         client.post(format!("{}/{}", self.mango_api_url_with_user_id, api_url))
             .header("Authorization", format!("Basic {}", self.authorization_token))
     }
