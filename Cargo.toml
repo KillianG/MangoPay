@@ -6,7 +6,7 @@ license = "Apache-2.0"
 description = "MangoPay API SDK #mangopay #pay #lib"
 
 [dependencies]
-base64 = "0.13.0"
+base64 = "0.20.0"
 reqwest = { version = "0.11", features = ["json", "blocking"] }
 serde_json = "1.0"
 serde_derive = "1.0.137"
